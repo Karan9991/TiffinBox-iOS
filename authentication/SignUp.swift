@@ -27,32 +27,9 @@ class SignUp: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let appColor = UIColor(named: "app")
-
-       headerSignupView.layer.cornerRadius = 32
-       controlSignupView.layer.cornerRadius = 32
-        etSignupEmail.attributedPlaceholder = NSAttributedString(string: "Email",attributes: [NSAttributedString.Key.foregroundColor: appColor])
-        etSignUpName.attributedPlaceholder = NSAttributedString(string: "Name",attributes: [NSAttributedString.Key.foregroundColor: appColor])
-        etSignUpPhone.attributedPlaceholder = NSAttributedString(string: "Phone",attributes: [NSAttributedString.Key.foregroundColor: appColor])
-        etSignUpAddr.attributedPlaceholder = NSAttributedString(string: "Address",attributes: [NSAttributedString.Key.foregroundColor: appColor])
-        etSignUpPass.attributedPlaceholder = NSAttributedString(string: "Password",attributes: [NSAttributedString.Key.foregroundColor: appColor])
-        btnSignUp.layer.cornerRadius = 25
-        btnNumberOfRooms.contentHorizontalAlignment = .left
-
         
-        //label click
-        let tap = UITapGestureRecognizer(target: self, action: #selector(SignUp.tvSignUp_Click(sender:)))
-              tvSignUp.isUserInteractionEnabled = true
-              tvSignUp.addGestureRecognizer(tap)
-        //tableview
-        tblDropDown.delegate = self
-        tblDropDown.dataSource = self
-        tblDropDownHC.constant = 0
-        
-        btnNumberOfRooms.layer.borderWidth = 1.0;
-        btnNumberOfRooms.layer.cornerRadius = 5.0;
-        btnNumberOfRooms.layer.borderColor = CGColor(red: 220/255.0, green: 220/255.0, blue: 220/255.0, alpha: 1);
-
+        initUI()
+       
     }
     
     
@@ -66,7 +43,6 @@ class SignUp: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     func navigateToAhead () {
         self.dismiss(animated: true, completion: nil)
-
         let myVC = self.storyboard?.instantiateViewController(withIdentifier: "Login") as! ViewController
         self.navigationController?.pushViewController(myVC, animated: true)
         self.navigationItem.hidesBackButton = true;
@@ -114,7 +90,6 @@ class SignUp: UIViewController, UITableViewDelegate, UITableViewDataSource {
             self.isTableVisible = false
             self.view.layoutIfNeeded()
         }
-        
     }
 
     @IBAction func selectNumberOfRooms(_ sender : AnyObject) {
@@ -142,5 +117,40 @@ class SignUp: UIViewController, UITableViewDelegate, UITableViewDataSource {
     override var preferredInterfaceOrientationForPresentation: UIInterfaceOrientation {
         return UIInterfaceOrientation.portrait
     }
+    
+    func initUI()  {
+        let appColor = UIColor(named: "app")
 
+       headerSignupView.layer.cornerRadius = 32
+       controlSignupView.layer.cornerRadius = 32
+        etSignupEmail.attributedPlaceholder = NSAttributedString(string: "Email",attributes: [NSAttributedString.Key.foregroundColor: appColor])
+        etSignUpName.attributedPlaceholder = NSAttributedString(string: "Name",attributes: [NSAttributedString.Key.foregroundColor: appColor])
+        etSignUpPhone.attributedPlaceholder = NSAttributedString(string: "Phone",attributes: [NSAttributedString.Key.foregroundColor: appColor])
+        etSignUpAddr.attributedPlaceholder = NSAttributedString(string: "Address",attributes: [NSAttributedString.Key.foregroundColor: appColor])
+        etSignUpPass.attributedPlaceholder = NSAttributedString(string: "Password",attributes: [NSAttributedString.Key.foregroundColor: appColor])
+        btnSignUp.layer.cornerRadius = 25
+        btnNumberOfRooms.contentHorizontalAlignment = .left
+
+    
+        //label click
+        let tap = UITapGestureRecognizer(target: self, action: #selector(SignUp.tvSignUp_Click(sender:)))
+              tvSignUp.isUserInteractionEnabled = true
+              tvSignUp.addGestureRecognizer(tap)
+        
+        //tableview
+        tblDropDown.delegate = self
+        tblDropDown.dataSource = self
+        tblDropDownHC.constant = 0
+        
+        btnNumberOfRooms.layer.borderWidth = 1.0;
+        btnNumberOfRooms.layer.cornerRadius = 5.0;
+        btnNumberOfRooms.layer.borderColor = CGColor(red: 220/255.0, green: 220/255.0, blue: 220/255.0, alpha: 1);
+
+    }
+    
+    //dismiss keypad
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        view.endEditing(true)
+        super.touchesBegan(touches, with: event)
+    }
 }
