@@ -8,6 +8,7 @@
 //import Foundation
 import UIKit
 import FirebaseDatabase
+import FirebaseAuth
 
 class SignUp: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
@@ -35,6 +36,7 @@ class SignUp: UIViewController, UITableViewDelegate, UITableViewDataSource {
         
         users = User()
         
+        
         ref = Database.database().reference()
         ref.child("online_drivers").observeSingleEvent(of: .value, with: { (snapshot) in
           // Get user value
@@ -56,13 +58,15 @@ class SignUp: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     
     @IBAction func btnSignUp(_ sender: Any) {
-        print("Data: ",users.userName ?? "nil", users.userType ?? "nil")
+        self.signUp(email: etSignupEmail.text!, password: etSignUpPass.text!)
+        
+      //  print("Data: ",users.userName ?? "nil", users.userType ?? "nil")
 
     }
     
     @objc
        func tvSignUp_Click(sender:UITapGestureRecognizer) {
-        //navigateToAhead()
+        navigateToAhead()
        }
     
     func navigateToAhead () {
@@ -177,4 +181,43 @@ class SignUp: UIViewController, UITableViewDelegate, UITableViewDataSource {
         view.endEditing(true)
         super.touchesBegan(touches, with: event)
     }
-}
+    
+    func signUp(email: String, password: String) {
+          
+              Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
+               
+               guard let user = authResult?.user, error == nil else {
+                
+                   let errorText: String  = error?.localizedDescription ?? "unknown error"
+                  // self.errorText = errorText
+                print(errorText)
+                self.showAlert(title: errorText, message: "")
+                   
+                 return
+               }
+               
+               Auth.auth().currentUser?.sendEmailVerification { (error) in
+                   if let error = error {
+                    //   self.errorText = error.localizedDescription
+                    print(error.localizedDescription)
+                    self.showAlert(title: error.localizedDescription, message: "")
+
+                     return
+                   }
+                 //  self.showAlert.toggle()
+                   
+                  // self.shouldAnimate = fals
+               }
+                self.showAlert(title: "Verification email sent", message: "Check your Email ID for click the link to verify")
+               print("\(user.email!) created")
+           }
+       }
+       
+    func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertController.Style.alert)
+                alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
+                self.present(alert, animated: true, completion: nil)
+    }
+       
+   }
+
