@@ -7,6 +7,7 @@
 
 //import Foundation
 import UIKit
+import FirebaseDatabase
 
 class SignUp: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
@@ -24,21 +25,44 @@ class SignUp: UIViewController, UITableViewDelegate, UITableViewDataSource {
     @IBOutlet weak var btnSignUp: UIButton!
     
     var isTableVisible = false
+    var users: User!
+    var ref: DatabaseReference!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         initUI()
-       
+        
+        users = User()
+        
+        ref = Database.database().reference()
+        ref.child("online_drivers").observeSingleEvent(of: .value, with: { (snapshot) in
+          // Get user value
+          let value = snapshot.value as? NSDictionary
+          let username = value?["username"] as? String ?? ""
+            print("Fuck Yes",value ?? "nil")
+          //let user = User(username: username)
+
+          // ...
+          }) { (error) in
+            print(error.localizedDescription)
+        }
+        
+//         users = User(name: "Karan", mobile: "4168165877", email: "karan7449@gmail.com", password: "Raj123$", address: "Canada", userType: "Seller")
+        users.userName = "Raj"
+       // users.address = "xxx"
+       // users.userType = "Cus"
     }
     
     
     @IBAction func btnSignUp(_ sender: Any) {
+        print("Data: ",users.userName ?? "nil", users.userType ?? "nil")
+
     }
     
     @objc
        func tvSignUp_Click(sender:UITapGestureRecognizer) {
-        navigateToAhead()
+        //navigateToAhead()
        }
     
     func navigateToAhead () {
@@ -145,7 +169,7 @@ class SignUp: UIViewController, UITableViewDelegate, UITableViewDataSource {
         btnNumberOfRooms.layer.borderWidth = 1.0;
         btnNumberOfRooms.layer.cornerRadius = 5.0;
         btnNumberOfRooms.layer.borderColor = CGColor(red: 220/255.0, green: 220/255.0, blue: 220/255.0, alpha: 1);
-
+        
     }
     
     //dismiss keypad
