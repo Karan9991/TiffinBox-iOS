@@ -8,33 +8,51 @@
 import UIKit
 import Firebase
 
-class ForgotPassword: UIViewController {
-    
+class ForgotPassword: UIViewController, Validate {
+
     @IBOutlet weak var headerForgotPassView: UIView!
     @IBOutlet weak var controlForgotPassView: UIView!
     @IBOutlet weak var btnForgotPass: UIButton!
     @IBOutlet weak var etForgotPass: UITextField!
+    var isValid: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+                
         initUI()
         
     }
     
-
+    func validations() -> Bool {
+        
+        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+        let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
+     
+        if (etForgotPass.text?.isEmpty ?? false) {
+            isValid = false
+            showAlert(title: "Email is required", message: "")
+        }
+       else if !emailPred.evaluate(with: etForgotPass.text) {
+            isValid = false
+            showAlert(title: "Please enter valid Email", message: "")
+        }
+        else {
+            isValid = true
+        }
+        return isValid
+    }
+    
     @IBAction func btnClick(_ sender: Any) {
-                Auth.auth().sendPasswordReset(withEmail: self.etForgotPass.text!) { error in
-        
-                                            if let error = error {
-                                                self.showAlert(title: error.localizedDescription, message: "")
-                                            //self.errorText = error.localizedDescription
-                                            return
-                                            }
-                    self.showAlert(title: "Forgot Password link sent", message: "Please check your Email and click the forgot password link for reset the password")
-                                           //self.showPasswordAlert.toggle()
-        
-                                            }
+        if validations() {
+            Auth.auth().sendPasswordReset(withEmail: self.etForgotPass.text!) { error in
+            
+            if let error = error {
+            self.showAlert(title: error.localizedDescription, message: "")
+            return
+        }
+            self.showAlert(title: "Forgot Password link sent", message: "Please check your Email and click the forgot password link for reset the password")
+        }
+        }
     }
     
     func showAlert(title: String, message: String) {

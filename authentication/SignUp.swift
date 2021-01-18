@@ -10,7 +10,7 @@ import UIKit
 import FirebaseDatabase
 import FirebaseAuth
 
-class SignUp: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class SignUp: UIViewController, UITableViewDelegate, UITableViewDataSource, Validate {
     
     @IBOutlet weak var headerSignupView: UIView!
     @IBOutlet weak var controlSignupView: UIView!
@@ -28,6 +28,7 @@ class SignUp: UIViewController, UITableViewDelegate, UITableViewDataSource {
     var isTableVisible = false
     var users: User!
     var ref: DatabaseReference!
+    var isValid = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,7 +36,6 @@ class SignUp: UIViewController, UITableViewDelegate, UITableViewDataSource {
         initUI()
         
         users = User()
-        
         
         ref = Database.database().reference()
         ref.child("online_drivers").observeSingleEvent(of: .value, with: { (snapshot) in
@@ -58,10 +58,10 @@ class SignUp: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     
     @IBAction func btnSignUp(_ sender: Any) {
-        self.signUp(email: etSignupEmail.text!, password: etSignUpPass.text!)
-        
-      //  print("Data: ",users.userName ?? "nil", users.userType ?? "nil")
-
+        print(btnNumberOfRooms.currentTitle)
+        if validations() {
+            self.signUp(email: etSignupEmail.text!, password: etSignUpPass.text!)
+        }
     }
     
     @objc
@@ -217,6 +217,45 @@ class SignUp: UIViewController, UITableViewDelegate, UITableViewDataSource {
         let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertController.Style.alert)
                 alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
                 self.present(alert, animated: true, completion: nil)
+    }
+    
+    func validations() -> Bool {
+        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+        let emailPred = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
+     
+        if (etSignUpName.text?.isEmpty ?? false) {
+            isValid = false
+            showAlert(title: "Name is required", message: "")
+        }
+        else  if (etSignUpPhone.text?.isEmpty ?? false) {
+             isValid = false
+             showAlert(title: "Phone is required", message: "")
+        }
+        else if (etSignupEmail.text?.isEmpty ?? false) {
+            isValid = false
+            showAlert(title: "Email is required", message: "")
+        }
+       else if !emailPred.evaluate(with: etSignupEmail.text) {
+            isValid = false
+            showAlert(title: "Please enter valid Email", message: "")
+        }
+       else  if (etSignUpPass.text?.isEmpty ?? false) {
+           isValid = false
+           showAlert(title: "Password is required", message: "")
+       }
+       else  if (etSignUpAddr.text?.isEmpty ?? false) {
+             isValid = false
+             showAlert(title: "Address is required", message: "")
+       }
+       else  if (btnNumberOfRooms.currentTitle == "  Select User Type") {
+             isValid = false
+             showAlert(title: "User Type is required", message: "")
+       }
+        else {
+            isValid = true
+        }
+        
+        return isValid
     }
        
    }
